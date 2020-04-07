@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VisualStudioProject ProjectCreator="Intel Fortran" Keyword="Console Application" Version="11.0" ProjectIdGuid="{64557194-6678-4B68-AA6F-AF49162D5503}">
+	<Platforms>
+		<Platform Name="Win32"/></Platforms>
+	<Configurations>
+		<Configuration Name="Debug|Win32">
+				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" DebugInformationFormat="debugEnabled" Optimization="optimizeDisabled" WarnInterfaces="true" Traceback="true" BoundsCheck="true" StackFrameCheck="true" RuntimeLibrary="rtMultiThreadedDebugDLL"/>
+				<Tool Name="VFLinkerTool" LinkIncremental="linkIncrementalNo" SuppressStartupBanner="true" GenerateDebugInformation="true" SubSystem="subSystemConsole"/>
+				<Tool Name="VFResourceCompilerTool"/>
+				<Tool Name="VFMidlTool" SuppressStartupBanner="true"/>
+				<Tool Name="VFCustomBuildTool"/>
+				<Tool Name="VFPreLinkEventTool"/>
+				<Tool Name="VFPreBuildEventTool"/>
+				<Tool Name="VFPostBuildEventTool"/>
+				<Tool Name="VFManifestTool" SuppressStartupBanner="true"/></Configuration>
+		<Configuration Name="Release|Win32">
+				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" RuntimeLibrary="rtMultiThreadedDLL"/>
+				<Tool Name="VFLinkerTool" LinkIncremental="linkIncrementalNo" SuppressStartupBanner="true" SubSystem="subSystemConsole"/>
+				<Tool Name="VFResourceCompilerTool"/>
+				<Tool Name="VFMidlTool" SuppressStartupBanner="true"/>
+				<Tool Name="VFCustomBuildTool"/>
+				<Tool Name="VFPreLinkEventTool"/>
+				<Tool Name="VFPreBuildEventTool"/>
+				<Tool Name="VFPostBuildEventTool"/>
+				<Tool Name="VFManifestTool" SuppressStartupBanner="true"/></Configuration></Configurations>
+	<Files>
+		<Filter Name="Header Files" Filter="fi;fd;h;inc"/>
+		<Filter Name="Resource Files" Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"/>
+		<Filter Name="Source Files" Filter="f90;for;f;fpp;ftn;def;odl;idl">
+		<File RelativePath="..\..\Source\area.f"/>
+		<File RelativePath="..\..\Source\cklib.f"/>
+		<File RelativePath="..\..\..\Version1.7\Version1.7\compress.f"/>
+		<File RelativePath="..\..\Source\cvcm.f"/>
+		<File RelativePath="..\..\Source\cvcminit.f"/>
+		<File RelativePath="..\..\Source\daux.f"/>
+		<File RelativePath="..\..\Source\dbanpre.f"/>
+		<File RelativePath="..\..\Source\ddaspk.f"/>
+		<File RelativePath="..\..\Source\dlinpk.f"/>
+		<File RelativePath="..\..\Source\dmach.f"/>
+		<File RelativePath="..\..\Source\drbdpre.f"/>
+		<File RelativePath="..\..\Source\driver.f"/>
+		<File RelativePath="..\..\Source\fldriv.f"/>
+		<File RelativePath="..\..\Source\gridgen.f90"/>
+		<File RelativePath="..\..\Source\inikey.f"/>
+		<File RelativePath="..\..\Source\JACCVCM.f"/>
+		<File RelativePath="..\..\Source\math.f"/>
+		<File RelativePath="..\..\Source\optic.f"/>
+		<File RelativePath="..\..\Source\outcvcm.f"/>
+		<File RelativePath=".\OUTZMF.for"/>
+		<File RelativePath="..\..\Source\point.f"/>
+		<File RelativePath="..\..\Source\prsave.f"/>
+		<File RelativePath="..\..\Source\PSOLCVCM.f"/>
+		<File RelativePath="..\..\Source\public.f"/>
+		<File RelativePath="..\..\Source\publicarray.f"/>
+		<File RelativePath="..\..\Source\rdkey.f"/>
+		<File RelativePath="..\..\Source\rescvcm.f"/>
+		<File RelativePath="..\..\Source\restrt.f"/>
+		<File RelativePath=".\RESZMF.f90"/>
+		<File RelativePath="..\..\Source\sphdifb.f"/>
+		<File RelativePath="..\..\Source\start.f"/>
+		<File RelativePath="..\..\Source\temp.f"/>
+		<File RelativePath="..\..\Source\tranlib.f"/>
+		<File RelativePath="..\..\Source\upcase.f"/>
+		<File RelativePath=".\zacpsolzmf.for"/>
+		<File RelativePath=".\zmfinit.for"/>
+		<File RelativePath=".\zmixfrac.f90"/></Filter></Files>
+	<Globals/></VisualStudioProject>
