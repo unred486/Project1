@@ -1,0 +1,8 @@
+C-----------------------------------------------------------------------
+      COMMON /FLFLFL/ NCKW, NMCW, NEPS, NWT,NRE,NSCH,NX,NCON,NVISM,NTGV,
+     1                NXGV, ND, NDKJ, NTDR, NYV, NSCL, NABV, NBLW, NBUF,
+     2                NTWP, NS, NSN, NF, NFN, NDS, NSSV, NKA6, NA, ICKW,
+     3                IMCW, IKS, ICC, IKR, IKI, IKP, IIP, LAC, LMK, 
+     4                NEPA, NPD, NXNEW, NXINT,NSS,NYAVM,NXAVM,NCPM,NXT,
+     5                NXR
+C-----------------------------------------------------------------------
