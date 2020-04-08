@@ -34,7 +34,7 @@
 		<File RelativePath="..\..\Source\cvcminit.f"/>
 		<File RelativePath="..\..\Source\daux.f"/>
 		<File RelativePath="..\..\Source\dbanpre.f"/>
-		<File RelativePath="..\..\Source\ddaspk.f"/>
+		<File RelativePath="..\..\..\DASPK\DASPK\solver\ddaspk.f"/>
 		<File RelativePath="..\..\Source\dlinpk.f"/>
 		<File RelativePath="..\..\Source\dmach.f"/>
 		<File RelativePath="..\..\Source\drbdpre.f"/>

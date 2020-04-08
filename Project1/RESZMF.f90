@@ -4,21 +4,40 @@
 !C       Therefore, simply calls FCVCM which calculates interior residuals
       SUBROUTINE RESZMF(T, U, UPRIME, CJ, DELTA, IRES, RPAR, IPAR)
       use var
+      use varray
       IMPLICIT DOUBLE PRECISION (A-H, O-Z), INTEGER (I-N)
 !C     need for UPRIME calculation      
       DIMENSION :: U(1000),UPRIME(1000),DELTA(1000),RPAR(*),IPAR(*)
       COMMON /SP/ KK,NATJ
       
-      NEQ=IPAR(3)
-      JJ= IPAR(4)
-      DO J=1,NEQ
-      DELTA(J)=U(J)
-      END DO
-      Call FZMF(U,DELTA,IPAR)
-      DO I=2,NEQ-1
-      DELTA(I)=UPRIME(I)-DELTA(I)
-      END DO
-     
+      !NEQ=IPAR(3)
+      !JJ= IPAR(4)
+      !
+      !DELTA(1)=U(1)
+      !DELTA(JJ)=U(JJ)
+      !
+      !Call FZMF(U,DELTA,IPAR)
+      !DO I=2,NEQ-1
+      !DELTA(I)=UPRIME(I)-DELTA(I)
+      !END DO
+!C Set problem constants using IPAR and RPAR.
+      NEQ = IPAR(3)
+      M = IPAR(4)
+!      COEFF = RPAR(2)
+      M2 = M + 2
+!C
+!C Load U into DELTA, in order to set boundary values.
+      DO 10 I = 1,NEQ
+ 10     DELTA(I) = U(I)
+!C
+!C Loop over interior points, and load residual values.
+        DO 20 J = 1,M
+          I = J + 1
+          TEMX = U(I-1)  + U(I+1)
+          DELTA(I) = UPRIME(I) - (TEMX - 2.0D0*U(I))*(xp(2)-xp(1))
+ 20       CONTINUE
+!
+      RETURN     
     
     END SUBROUTINE  RESZMF
       
@@ -44,9 +63,9 @@
       DMFR=10.0e-3
       D=1.0
       JJ= IPAR(4)
-    DO I=1,NATJ
+!    DO I=1,NATJ
       DO J=2,JJ-1 
-          K=I*J
+          K=J
           DCHAN(K)=xp(K)-xp(K-1)
           xmid = 0.5 * ( xp(j)   + xp(j+1) )
           xmidm= 0.5 * ( xp(j-1) + xp(j)   )
@@ -62,17 +81,17 @@
           
          ! (cond(j)*areap*(s(nt,j+1)-s(nt,j))/dxp-cond(j-1)*aream*(s(nt,j)-s(nt,j-1))/dxm )
           CONV(K)=(V*(U(K)-U(K-NATJ))/dxm)
-          FirstDIFF=areap*DmixALL(K)*(U(K+NATJ)-U(K))/dxp
-          SecondDIFF=aream*DmixALL(K-NATJ)*(U(K)-U(K-NATJ))/dxm
-          !FirstDIFF=D*(U(K+NATJ)-U(K))/dxp
-          !SecondDIFF=D*(U(K)-U(K-NATJ))/dxm
-          DIFF(K)=(1/Ai)*(FirstDIFF-SecondDIFF)/dxav
+          !FirstDIFF=areap*DmixALL(K)*(U(K+NATJ)-U(K))/dxp
+          !SecondDIFF=aream*DmixALL(K-NATJ)*(U(K)-U(K-NATJ))/dxm
+          FirstDIFF=D*(U(K+NATJ)-U(K))/dxp
+          SecondDIFF=D*(U(K)-U(K-NATJ))/dxm
+          !DIFF(K)=(1/Ai)*(FirstDIFF-SecondDIFF)/dxav
           !DIFF(K)=(FirstDIFF-SecondDIFF)/dxav
           
           !CRATE(K)=-conv(k)
-          CRATE(K)=0.1*DIFF(K)-CONV(K)
-          !CRATE(K)=DIFF(K)
+          !CRATE(K)=0.1*DIFF(K)-CONV(K)
+          CRATE(K)=DIFF(K)
       END DO
-    END DO
+ !   END DO
       
       END SUBROUTINE FZMF

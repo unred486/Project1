@@ -60,7 +60,7 @@ C       TOUT   - END TIME for current simulation    unit : s
 C       DT1    - time step  
       use var
       IMPLICIT NONE
-      DOUBLE PRECISION :: U(*),UPRIME(*),RW(*),X(*)
+      DOUBLE PRECISION :: U(400),UPRIME(*),RW(*),X(400)
       INTEGER :: IW(*)
       DOUBLE PRECISION :: T,dummy,AVDIM,XST,ZST
       INTEGER :: NHBW,IDID,LOUT,J,JJ,K,MBAND,NST,NPE,PRE,
@@ -89,8 +89,8 @@ C       DT1    - time step
       WRITE (LFTEMPTIME, 8029) T
       endif 
       
-      CALL XFIND(X,U,ZST,XST)
-      WRITE (LFTEMPTIME, 80298) T,XST
+c      CALL XFIND(X,U,ZST,XST)
+c      WRITE (LFTEMPTIME, 80298) T,XST
       
       WRITE(LOUT, 80) T
       WRITE(LOUT,*)

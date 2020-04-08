@@ -6,8 +6,8 @@ C*****precision > double
 c     IMPLICIT DOUBLE PRECISION (A-H, O-Z), INTEGER (I-N)
 
 C*****END precision > double
-      DOUBLE PRECISION ::  U(NATJ*JJ),UPRIME(NATJ*JJ),X(JJ)
-      INTEGER :: K,J,JJ,NEQ,NATJ,I
+      DOUBLE PRECISION ::  U(NATJ*JJ),UPRIME(NATJ*JJ),X(JJ),XJ
+      INTEGER :: K,J,JJ,NEQ,NATJ,I,M
 
 C       JJ    - Number of Nodes ( In CVCM reactor JJ =1 )
 C       NATJ  - Number of Dependent Variables
@@ -18,7 +18,12 @@ C               derivatives of the solution components at the initial
 C               point.  You must dimension YPRIME at least NATJ*JJ in your
 C               calling program.   
 C       U(NZ) - Mixture Fraction 
-
+      M=JJ-2
+        DO 10 J = 0,M+1
+          XJ = J*(X(2)-X(1))
+          I = J + 1
+          U(I) = 16.0D0*XJ*(1.0D0-XJ)
+ 10       CONTINUE
 
       DO I=1,NEQ
       UPRIME(I)=0.0

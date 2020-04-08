@@ -76,7 +76,7 @@
 !C
       INTEGER :: IW(*),INFO(20),IPAR(4)
       DOUBLE PRECISION :: C(NATJ*JJ),RW(*),CCPRIME(NATJ*JJ),RPAR(NATJ),  &
-       RTOL(1),ATOL(1),X(*),DMIX(*)
+       RTOL(1),ATOL(1),X(JJ),DMIX(*)
       DOUBLE PRECISION :: DT1,TOUT,T,DT2,XST,ZST,XSTR,XEND
       INTEGER :: LOUT, NEQ, NATJ, NHBW,ML,MU,JJ,J,NOUT,IOUT &
                 ,IDID,IMOD3,NMAX 
@@ -100,65 +100,15 @@
 !C       INFO(12) 
 !C       direct methods - set INFO(12) = 0.
 !C       Krylov method  - set INFO(12) = 1,
-      IF (INFO(12) .EQ. 1) THEN
-!c        JBG = 0
-!c        IPAR(2) = JBG
-!C First set the preconditioner choice JPRE.
-!C  JPRE = 1 means reaction-only (block-diagonal) factor A_R
-!C  JPRE = 2 means spatial factor (Gauss-Seidel) A_S
-!C  JPRE = 3 means A_S * A_R
-!C  JPRE = 4 means A_R * A_S
-!C Use IPAR to communicate JPRE to the preconditioner solve routine.
-!c        JPRE = 1
-!c        IPAR(1) = JPRE
-!c        WRITE(LOUT,100)JPRE
-!c 100    FORMAT(' Preconditioner flag is JPRE =',I3/
-!c     1      '  (1 = reaction factor A_R, 2 = spatial factor A_S,',
-!c     2      ' 3 = A_S*A_R, 4 = A_R*A_S )'/)
-!C Here call DMSET2 if JBG = 0 to set the
-!C mesh parameters and block-grouping data, and the IWORK segment ID
-!C indicating the differential and algebraic components.
-!c
-!c          CALL DMSET2 (MX, MY, NS, NP, 40, IWORK)
-!c          WRITE(LOUT,110)
-!c 110      FORMAT(' No block-grouping in reaction factor')
-!c        IF (JBG .EQ. 1) THEN
-!c          NXG = 5
-!c          NYG = 5
-!c          NG = NXG*NYG
-!c          CALL DGSET2 (MX, MY, NS, NP, NXG, NYG, 40, IWORK)
-!c          WRITE(LOUT,120)NG,NXG,NYG
-!c 120      FORMAT(' Block-grouping in reaction factor'/
-!c     1           ' Number of groups =',I5,
-!c     2           '   (NGX by NGY, NGX =',I3,',  NGY =',I3,')')
-!c         ENDIF
+    IF (INFO(12) .EQ. 1) THEN
       ML = NHBW
       MU = NHBW
       IPAR(1) = ML
       IPAR(2) = MU
-      IW(27) = LENWP
-      IW(28) = NATJ*NMAX
-!C        INFO(15) - used when INFO(12) = 1 (Krylov methods).
-!C               When using preconditioning in the Krylov method,
-!C               you must supply a subroutine, PSOL, which solves the
-!C               associated linear systems using P.
-!C               The usage of DDASPK is simpler if PSOL can carry out
-!C               the solution without any prior calculation of data.
-!C               However, if some partial derivative data is to be
-!C               calculated in advance and used repeatedly in PSOL,
-!C               then you must supply a JAC routine to do this,
-!C               and set INFO(15) to indicate that JAC is to be called
-!C               for this purpose.  For example, P might be an
-!C               approximation to a part of the matrix A which can be
-!C               calculated and LU-factored for repeated solutions of
-!C               the preconditioner system.  The arrays WP and IWP
-!C               (described under JAC and PSOL) can be used to
-!C               communicate data between JAC and PSOL.
+      IW(27) = LENWP-NEQ
+      IW(28) = NEQ
       INFO(15) = 1
-!          CALL DMSET2 (NEQ, 40, IW)
-!          WRITE(LOUT,110)
-! 110      FORMAT(' No block-grouping in reaction factor')
-       ENDIF
+    ENDIF
         
 !C Set the initial T and TOUT, and call CINIT to set initial values.  
       T = 0.0D0
@@ -167,14 +117,15 @@
 !c      WRITE (LOUT,40)
 !c      WRITE (*,40)      
         IPAR(3)=NEQ
-        IPAR(4)=JJ
+        IPAR(4)=JJ-2
       IOUT = 0
+      CALL SETPARzmf(X,JJ,DMIX)
       DO WHILE(1)
 !C       SETPAR sets pointers to arrays needed for calculation
 !C       in varray module for use by RESCVCM subroutine which calculates 
 !C       residual 
 !        CALL updategridzmf(NATJ,JJ,NMAX,C,X,DMIX,XST,ZST,XSTR,XEND,IPAR)    
-        CALL SETPARzmf(X,JJ,DMIX)
+!        CALL SETPARzmf(X,JJ,DMIX)
 !C       Calling main solver, DDASPK subroutine
 100     CONTINUE
         CALL DDASPK (RESZMF, NEQ, T, C, CCPRIME, TOUT, INFO, RTOL, &
@@ -206,8 +157,7 @@
 !C       Last Time step of DDASPK before reporting
 !            CALL updategridzmf(NATJ,JJ,NMAX,C,X,DMIX,XST,ZST,XSTR,XEND, &
 !                IPAR)
-
-            CALL SETPARzmf(X,JJ,DMIX)
+!            CALL SETPARzmf(X,JJ,DMIX)
             CALL DDASPK (RESZMF, NEQ, T, C, CCPRIME, TOUT, INFO, RTOL,  &
                   ATOL,IDID, RW,LRW, IW,LIW, RPAR, IPAR,      &
                  DBANJA, DBANPS)
@@ -235,6 +185,3 @@
         
       RETURN 
       END SUBROUTINE  zmf
-   
-      
-
