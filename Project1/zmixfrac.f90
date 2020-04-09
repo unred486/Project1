@@ -6,7 +6,7 @@
 !C   subroutine uses dasppk solver. 
 
       SUBROUTINE zmf(NATJ,JJ,LOUT,NMAX,X,RW,IW,C,INFO,DT1,RTOL,ATOL,DMIX, &
-          XST,ZST,XSTR,XEND)
+          XST,ZST,XSTR,XEND,ZBUR,ZAMB)
 !C       zmixfrac.f90 starts the constant volume and constant mass calculation
 !C       Calls zmfINIT, SETPARzmf, DDASPK,  OUTzmf subroutines
 
@@ -75,9 +75,9 @@
 !C*****END precision > single
 !C
       INTEGER :: IW(*),INFO(20),IPAR(4)
-      DOUBLE PRECISION :: C(NATJ*JJ),RW(*),CCPRIME(NATJ*JJ),RPAR(NATJ),  &
-       RTOL(1),ATOL(1),X(JJ),DMIX(*)
-      DOUBLE PRECISION :: DT1,TOUT,T,DT2,XST,ZST,XSTR,XEND
+      DOUBLE PRECISION :: C(*),RW(*),CCPRIME(NATJ*JJ),RPAR(4),  &
+       RTOL(1),ATOL(1),X(*),DMIX(*)
+      DOUBLE PRECISION :: DT1,TOUT,T,DT2,XST,ZST,XSTR,XEND,ZBUR,ZAMB
       INTEGER :: LOUT, NEQ, NATJ, NHBW,ML,MU,JJ,J,NOUT,IOUT &
                 ,IDID,IMOD3,NMAX 
       NEQ=NATJ*JJ
@@ -113,11 +113,11 @@
 !C Set the initial T and TOUT, and call CINIT to set initial values.  
       T = 0.0D0
       TOUT = DT1
-      CALL zmfINIT (C, CCPRIME, X, JJ,NATJ,NEQ)  
+      CALL zmfINIT (C, CCPRIME, X, JJ,NATJ,NEQ,RPAR,ZBUR,ZAMB)  
 !c      WRITE (LOUT,40)
 !c      WRITE (*,40)      
         IPAR(3)=NEQ
-        IPAR(4)=JJ-2
+        IPAR(4)=JJ
       IOUT = 0
       CALL SETPARzmf(X,JJ,DMIX)
       DO WHILE(1)

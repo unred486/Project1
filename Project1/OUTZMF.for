@@ -89,8 +89,8 @@ C       DT1    - time step
       WRITE (LFTEMPTIME, 8029) T
       endif 
       
-c      CALL XFIND(X,U,ZST,XST)
-c      WRITE (LFTEMPTIME, 80298) T,XST
+      CALL XFIND(X,U,ZST,XST)
+      WRITE (LFTEMPTIME, 80298) T,XST
       
       WRITE(LOUT, 80) T
       WRITE(LOUT,*)

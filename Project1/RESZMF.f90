@@ -10,33 +10,19 @@
       DIMENSION :: U(1000),UPRIME(1000),DELTA(1000),RPAR(*),IPAR(*)
       COMMON /SP/ KK,NATJ
       
-      !NEQ=IPAR(3)
-      !JJ= IPAR(4)
-      !
-      !DELTA(1)=U(1)
-      !DELTA(JJ)=U(JJ)
-      !
-      !Call FZMF(U,DELTA,IPAR)
-      !DO I=2,NEQ-1
-      !DELTA(I)=UPRIME(I)-DELTA(I)
-      !END DO
-!C Set problem constants using IPAR and RPAR.
-      NEQ = IPAR(3)
-      M = IPAR(4)
-!      COEFF = RPAR(2)
-      M2 = M + 2
-!C
-!C Load U into DELTA, in order to set boundary values.
-      DO 10 I = 1,NEQ
- 10     DELTA(I) = U(I)
-!C
-!C Loop over interior points, and load residual values.
-        DO 20 J = 1,M
-          I = J + 1
-          TEMX = U(I-1)  + U(I+1)
-          DELTA(I) = UPRIME(I) - (TEMX - 2.0D0*U(I))*(xp(2)-xp(1))
- 20       CONTINUE
-!
+      NEQ=IPAR(3)
+      JJ= IPAR(4)
+      ZBUR=RPAR(1)
+      ZAMB=RPAR(2)
+      
+      DELTA(1)=U(1)-ZBUR
+      DELTA(JJ)=U(JJ)-ZAMB
+      
+      Call FZMF(U,DELTA,IPAR)
+      DO I=2,NEQ-1
+      DELTA(I)=UPRIME(I)-DELTA(I)
+      END DO
+
       RETURN     
     
     END SUBROUTINE  RESZMF
@@ -81,16 +67,16 @@
           
          ! (cond(j)*areap*(s(nt,j+1)-s(nt,j))/dxp-cond(j-1)*aream*(s(nt,j)-s(nt,j-1))/dxm )
           CONV(K)=(V*(U(K)-U(K-NATJ))/dxm)
-          !FirstDIFF=areap*DmixALL(K)*(U(K+NATJ)-U(K))/dxp
-          !SecondDIFF=aream*DmixALL(K-NATJ)*(U(K)-U(K-NATJ))/dxm
-          FirstDIFF=D*(U(K+NATJ)-U(K))/dxp
-          SecondDIFF=D*(U(K)-U(K-NATJ))/dxm
-          !DIFF(K)=(1/Ai)*(FirstDIFF-SecondDIFF)/dxav
+          FirstDIFF=areap*DmixALL(K)*(U(K+NATJ)-U(K))/dxp
+          SecondDIFF=aream*DmixALL(K-NATJ)*(U(K)-U(K-NATJ))/dxm
+          !FirstDIFF=D*(U(K+NATJ)-U(K))/dxp
+          !SecondDIFF=D*(U(K)-U(K-NATJ))/dxm
+          DIFF(K)=(1/Ai)*(FirstDIFF-SecondDIFF)/dxav
           !DIFF(K)=(FirstDIFF-SecondDIFF)/dxav
           
           !CRATE(K)=-conv(k)
-          !CRATE(K)=0.1*DIFF(K)-CONV(K)
-          CRATE(K)=DIFF(K)
+          CRATE(K)=0.1*DIFF(K)-CONV(K)
+          !CRATE(K)=DIFF(K)
       END DO
  !   END DO
       
