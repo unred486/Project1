@@ -2,7 +2,7 @@ C//////////////////////////////////////////////////////////////////////
 C////////////////// OUTZMF ////////////////////////
 C//////////////////////////////////////////////////////////////////////  
 C
-      SUBROUTINE OUTZMF(T,U,UPRIME,LOUT,IDID,IW,RW,JJ,NHBW,X,ZST) 
+      SUBROUTINE OUTZMF(T,U,UPRIME,LOUT,IDID,IW,RW,JJ,NHBW,X,ZST,DMIX) 
       use f90_module
 C       OUTCVCM prints out solution variables such as U and UPRIME
      
@@ -60,7 +60,7 @@ C       TOUT   - END TIME for current simulation    unit : s
 C       DT1    - time step  
       use var
       IMPLICIT NONE
-      DOUBLE PRECISION :: U(400),UPRIME(*),RW(*),X(400)
+      DOUBLE PRECISION :: U(*),UPRIME(*),RW(*),X(*),DMIX(*)
       INTEGER :: IW(*)
       DOUBLE PRECISION :: T,dummy,AVDIM,XST,ZST
       INTEGER :: NHBW,IDID,LOUT,J,JJ,K,MBAND,NST,NPE,PRE,
@@ -113,7 +113,7 @@ C       DT1    - time step
       
       DO J=1,JJ
           WRITE(LOUT, 51) X(J),U(J)
-          WRITE(LSPACE, 51) X(J),U(J)
+          WRITE(LSPACE, 51) X(J),U(J),DMIX(J)
       END DO
       
       write(LOUT,*) IDID
@@ -126,11 +126,11 @@ C       DT1    - time step
      1          '///////////////////////////////////////////////// ',//)
   
 50    FORMAT('X Zmix')
-51    FORMAT(2ES14.3)      
+51    FORMAT(3ES14.3)      
 8026  FORMAT('VARIABLES=')      
 80298 FORMAT (2 (1PE12.4),2X)
 80276 FORMAT ('Time(s)' 2X 'XST' )
-80277 FORMAT ('X' 2X 'Z')
+80277 FORMAT ('X' 2X 'Z' 2X 'D')
 8029  FORMAT('ZONE T="',1PE11.3,' s"')
 80    FORMAT('At time t = ',ES16.5)
 90    FORMAT(/' Final statistics for this run..'/

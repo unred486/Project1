@@ -75,7 +75,7 @@
 !C*****END precision > single
 !C
       INTEGER :: IW(*),INFO(20),IPAR(4)
-      DOUBLE PRECISION :: C(*),RW(*),CCPRIME(NATJ*JJ),RPAR(4),  &
+      DOUBLE PRECISION :: C(*),RW(*),CCPRIME(NATJ*NMAX),RPAR(4),  &
        RTOL(1),ATOL(1),X(*),DMIX(*)
       DOUBLE PRECISION :: DT1,TOUT,T,DT2,XST,ZST,XSTR,XEND,ZBUR,ZAMB
       INTEGER :: LOUT, NEQ, NATJ, NHBW,ML,MU,JJ,J,NOUT,IOUT &
@@ -139,7 +139,7 @@
         
         IMOD3 = IOUT - 1000*(IOUT/1000)
         IF (IMOD3 .EQ. 0) THEN 
-            CALL OUTZMF (T,C,CCPRIME,LOUT,IDID,IW,RW,JJ,NHBW,X,ZST) 
+            CALL OUTZMF (T,C,CCPRIME,LOUT,IDID,IW,RW,JJ,NHBW,X,ZST,DMIX) 
         ENDIF
         TOUT=TOUT+DT1
         IOUT=IOUT+1
@@ -148,7 +148,7 @@
 !C    or IF ERROR CONDITION BY DDASPK is reached, program exits
         IF (IDID .LT. -1) THEN            
             WRITE(LOUT,*)'error condition has been reached'
-            CALL OUTZMF (T,C,CCPRIME,LOUT,IDID,IW,RW,JJ,NHBW,X,ZST) 
+            CALL OUTZMF (T,C,CCPRIME,LOUT,IDID,IW,RW,JJ,NHBW,X,ZST,DMIX) 
             WRITE(LOUT,73) IDID
             GO TO 210            
         END IF
@@ -161,7 +161,7 @@
             CALL DDASPK (RESZMF, NEQ, T, C, CCPRIME, TOUT, INFO, RTOL,  &
                   ATOL,IDID, RW,LRW, IW,LIW, RPAR, IPAR,      &
                  DBANJA, DBANPS)
-            CALL OUTZMF (T,C,CCPRIME,LOUT,IDID,IW,RW,JJ,NHBW,X,ZST) 
+            CALL OUTZMF (T,C,CCPRIME,LOUT,IDID,IW,RW,JJ,NHBW,X,ZST,DMIX) 
             WRITE(LOUT,160)TOUT 
             GO TO 210
         ENDIF     

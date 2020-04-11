@@ -15,74 +15,15 @@
 /BURN         ! Solve temp and species profile, default: solve flame speed      
 ZCAL                                                                            
 /LHOM                                                                           
-NTOT 400      ! maximum number of grids we can use (use with adaptivegrid)     
+NTOT 1000      ! maximum number of grids we can use (use with adaptivegrid)     
 NPTS 400      ! Starting Number of grid                                         
 XSTR  0.32                                                                      
 XEND  5.0
 ZBUR 1.0
 ZAMB 0.0
 ////
-ZMIX 0.320 1.0                                                                  
-ZMIX 0.352 0.9915                                                               
-ZMIX 0.358 0.9895                                                               
-ZMIX 0.364 0.9873                                                               
-ZMIX 0.371 0.9849                                                               
-ZMIX 0.377 0.9821                                                               
-ZMIX 0.384 0.9791                                                               
-ZMIX 0.390 0.9759                                                               
-ZMIX 0.396 0.9724                                                               
-ZMIX 0.403 0.9687                                                                                                                         
-ZMIX 0.454 0.9324                                                                                                                          
-ZMIX 0.505 0.8890                                                               
-ZMIX 0.512 0.8833                                                               
-ZMIX 0.518 0.8776                                                               
-ZMIX 0.525 0.8718                                                               
-ZMIX 0.531 0.8661                                                                                               
-ZMIX 0.557 0.8430                                                                                                                 
-ZMIX 0.602 0.8030                                                                                                                     
-ZMIX 0.635 0.7753                                                               
-ZMIX 0.661 0.7537                                                                                                
-ZMIX 0.700 0.7229                                                                                                                        
-ZMIX 0.739 0.6947                                                               
-ZMIX 0.740 0.6940                                                                                                                                                                                
-ZMIX 0.752 0.6862                                                                                                                                                                                                        
-ZMIX 0.777 0.6705                                                                                                                      
-ZMIX 0.791 0.6619                                                                                                                       
-ZMIX 0.808 0.6516 
-ZMIX 0.819 0.6450                                                               
-ZMIX 0.834 0.6362                                                         
-ZMIX 0.849 0.6274                                                               
-ZMIX 0.866 0.6175                                                                                                     
-ZMIX 0.885 0.6065                                                                                                                    
-ZMIX 0.922 0.5856                                                               
-ZMIX 0.926 0.5836                                                               
-ZMIX 0.930 0.5815                                                               
-ZMIX 0.933 0.5793                                                                                                                        
-ZMIX 0.946 0.5721                                                                                                                       
-ZMIX 0.973 0.5576                                                                                                                         
-ZMIX 1.014 0.5351                                                                                                              
-ZMIX 1.059 0.5111                                                                                                          
-ZMIX 1.117 0.4810                                                               
-ZMIX 1.130 0.4741                                                               
-ZMIX 1.144 0.4670                                                                                                                 
-ZMIX 1.225 0.4258                                                                                                                    
-ZMIX 1.305 0.3856                                                                                                                         
-ZMIX 1.352 0.3625                                                               
-ZMIX 1.377 0.3502                                                                                                                       
-ZMIX 1.431 0.3237                                                               
-ZMIX 1.460 0.3094                                                                                                                             
-ZMIX 1.522 0.2787                                                               
-ZMIX 1.556 0.2620                                                               
-ZMIX 1.591 0.2445                                                               
-ZMIX 1.628 0.2259                                                               
-ZMIX 1.667 0.2060                                                               
-ZMIX 1.707 0.1848                                                               
-ZMIX 1.750 0.1621                                                               
-ZMIX 1.795 0.1374                                                               
-ZMIX 1.842 0.1102                                                               
-ZMIX 1.892 0.0798                                                               
-ZMIX 1.944 0.0446                                                               
-ZMIX 2.056 0.0                                                                  
+ZMIX 0.320 1.0
+ZMIX 0.34 0.0                                                                                                                                  
 ZMIX 5.00 0.0                                                                                                                                                                                                                   
 /                                                                               
 /                                                                               
@@ -135,7 +76,7 @@ DMIX 1.9986 0.18222
 DMIX 2.056 0.17879                                                              
 DMIX 5.0 0.17878                                                                                                                              
 / Flame Specificationsi                                                         
-ZST 0.69                                                                                                            
+ZST 0.3                                                                                                            
 / Number of time step to perform. a negative value is used for transient computa
 DIRC 1               ! 0= Direct method 1 = Krylov method in cvcm reactor calc  
 TIME 10   1.000E-7    ! Desired Timestep size                                   

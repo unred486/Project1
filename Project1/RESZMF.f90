@@ -14,9 +14,23 @@
       JJ= IPAR(4)
       ZBUR=RPAR(1)
       ZAMB=RPAR(2)
+      RHO = 1.187E-3
+!     M = 10.0 mg/s
+      DMFR=10.0e-3
+      dxp  =     (xp(2) - xp(1)  )
+      xmid =    0.5*(xp(2)+xp(1))
+      call area ( xmid, Areap    )
+      call area (xp(1),Ai)
+      V = DMFR/(RHO*Ai)
       
-      DELTA(1)=U(1)-ZBUR
-      DELTA(JJ)=U(JJ)-ZAMB
+      !!////////// Dirichlet BC 
+      !DELTA(1)=U(1)-ZBUR
+      !DELTA(JJ)=U(JJ)-ZAMB
+      
+     !/////////////// Diffusion into burner //////////////////
+      !DELTA(1)  =   -1.0*DMIXall(1)*((U(2)-U(1))/dxp)+V*(U(1)-1.0)
+      DELTA(1)  =   -(1.0-U(1))-DMIXall(1)*areap*((U(2)-U(1))/dxp)/V
+      DELTA(JJ) =   U(JJ)-ZAMB   
       
       Call FZMF(U,DELTA,IPAR)
       DO I=2,NEQ-1
