@@ -89,7 +89,7 @@
           !DIFF(K)=(FirstDIFF-SecondDIFF)/dxav
           
           !CRATE(K)=-conv(k)
-          CRATE(K)=0.1*DIFF(K)-CONV(K)
+          CRATE(K)=DIFF(K)-CONV(K)
           !CRATE(K)=DIFF(K)
       END DO
  !   END DO

@@ -75,8 +75,8 @@
 !C*****END precision > single
 !C
       INTEGER :: IW(*),INFO(20),IPAR(4)
-      DOUBLE PRECISION :: C(*),RW(*),CCPRIME(NATJ*NMAX),RPAR(4),  &
-       RTOL(1),ATOL(1),X(*),DMIX(*)
+      DOUBLE PRECISION :: C(NMAX),RW(*),CCPRIME(NATJ*NMAX),RPAR(4),  &
+       RTOL(1),ATOL(1),X(NMAX),DMIX(NMAX)
       DOUBLE PRECISION :: DT1,TOUT,T,DT2,XST,ZST,XSTR,XEND,ZBUR,ZAMB
       INTEGER :: LOUT, NEQ, NATJ, NHBW,ML,MU,JJ,J,NOUT,IOUT &
                 ,IDID,IMOD3,NMAX 
@@ -124,13 +124,14 @@
 !C       SETPAR sets pointers to arrays needed for calculation
 !C       in varray module for use by RESCVCM subroutine which calculates 
 !C       residual 
-!        CALL updategridzmf(NATJ,JJ,NMAX,C,X,DMIX,XST,ZST,XSTR,XEND,IPAR)    
-!        CALL SETPARzmf(X,JJ,DMIX)
 !C       Calling main solver, DDASPK subroutine
 100     CONTINUE
         CALL DDASPK (RESZMF, NEQ, T, C, CCPRIME, TOUT, INFO, RTOL, &
                  ATOL, IDID, RW,LRW, IW,LIW, RPAR, IPAR,           & 
                  DBANJA, DBANPS)
+        CALL updategridzmf(NATJ,JJ,NMAX,C,X,DMIX,XST,ZST,XSTR,XEND,&
+          IPAR, IW,NEQ)    
+        CALL SETPARzmf(X,JJ,DMIX)
 
 !c        IF (IDID .EQ. -1) GO TO 100
 !C       Printing out the solver status 
@@ -155,9 +156,9 @@
         
         IF (TIMMX .LT. TOUT) THEN
 !C       Last Time step of DDASPK before reporting
-!            CALL updategridzmf(NATJ,JJ,NMAX,C,X,DMIX,XST,ZST,XSTR,XEND, &
-!                IPAR)
-!            CALL SETPARzmf(X,JJ,DMIX)
+            CALL updategridzmf(NATJ,JJ,NMAX,C,X,DMIX,XST,ZST,XSTR,XEND, &
+                IPAR,IW,NEQ)
+            CALL SETPARzmf(X,JJ,DMIX)
             CALL DDASPK (RESZMF, NEQ, T, C, CCPRIME, TOUT, INFO, RTOL,  &
                   ATOL,IDID, RW,LRW, IW,LIW, RPAR, IPAR,      &
                  DBANJA, DBANPS)
