@@ -15,7 +15,7 @@
 /BURN         ! Solve temp and species profile, default: solve flame speed      
 ZCAL                                                                            
 /LHOM                                                                           
-NTOT 1000      ! maximum number of grids we can use (use with adaptivegrid)     
+NTOT 1500      ! maximum number of grids we can use (use with adaptivegrid)     
 NPTS 400      ! Starting Number of grid                                         
 XSTR  0.32                                                                      
 XEND  5.0
@@ -81,7 +81,7 @@ ZST 0.3
 DIRC 1               ! 0= Direct method 1 = Krylov method in cvcm reactor calc  
 TIME 10   1.000E-7    ! Desired Timestep size                                   
 / MIN AND MAX TIME STEP, MAXIMUM TIME (SHUT DOWN WHEN REACHED)                  
-MXTM 0.5E-0           ! MAXIMUM TIME - STOP SIMULATION AT 3,000,000 Seconds     
+MXTM 0.5E-2           ! MAXIMUM TIME - STOP SIMULATION AT 3,000,000 Seconds     
 /                                                                               
 / Tolerances for the Newton iteration                                           
 ATOL 1.0E-3           ! Absolute tolerance                                     

@@ -7,7 +7,7 @@
       use varray
       IMPLICIT DOUBLE PRECISION (A-H, O-Z), INTEGER (I-N)
 !C     need for UPRIME calculation      
-      DIMENSION :: U(1000),UPRIME(1000),DELTA(1000),RPAR(*),IPAR(*)
+      DIMENSION :: U(1500),UPRIME(1500),DELTA(1500),RPAR(*),IPAR(*)
       COMMON /SP/ KK,NATJ
       
       NEQ=IPAR(3)
@@ -53,7 +53,7 @@
       use varray
       use var
       IMPLICIT DOUBLE PRECISION (A-H, O-Z), INTEGER (I-N)
-      DIMENSION :: U(*),CRATE(*),IPAR(4),CONV(1000),DIFF(1000),DCHAN(1000)
+      DIMENSION :: U(*),CRATE(*),IPAR(4),CONV(1500),DIFF(1500),DCHAN(1500)
       
       COMMON /SP/ KK,NATJ
         
@@ -89,7 +89,7 @@
           !DIFF(K)=(FirstDIFF-SecondDIFF)/dxav
           
           !CRATE(K)=-conv(k)
-          CRATE(K)=DIFF(K)-CONV(K)
+          CRATE(K)=0.1*DIFF(K)-CONV(K)
           !CRATE(K)=DIFF(K)
       END DO
  !   END DO
