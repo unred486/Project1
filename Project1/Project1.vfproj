@@ -40,7 +40,7 @@
 		<File RelativePath="..\..\Source\drbdpre.f"/>
 		<File RelativePath="..\..\Source\driver.f"/>
 		<File RelativePath="..\..\Source\fldriv.f"/>
-		<File RelativePath="..\..\Source\gridgen.f90"/>
+		<File RelativePath=".\Source\gridgen.f90"/>
 		<File RelativePath="..\..\Source\inikey.f"/>
 		<File RelativePath="..\..\Source\JACCVCM.f"/>
 		<File RelativePath="..\..\Source\math.f"/>

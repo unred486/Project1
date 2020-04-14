@@ -457,7 +457,7 @@ end subroutine
 Subroutine XFIND(XXZ,ZGIVEN,ZST,XST)
 implicit none
 
-DOUBLE PRECISION :: XXZ(600),ZGIVEN(600)
+DOUBLE PRECISION :: XXZ(*),ZGIVEN(1000)
 DOUBLE PRECISION :: XST,ZST
 INTEGER :: J
 J=1
@@ -473,35 +473,106 @@ END IF
 
 END Subroutine XFIND
 
-subroutine updategridzmf(NATJ,JJ,NMAX,C,X,DMIX,XST,ZST,XSTR,XEND,IPAR)
+subroutine updategridzmf(NATJ,JJ,NMAX,C,X,DMIX,XST,ZST,XSTR,XEND,IPAR,&
+    IW,NEQ)
+use var
 implicit none
 
-double precision :: XNEW(NMAX),C(*),SS(NATJ,NMAX),X(JJ),DMIX(400),DM(NMAX) &
+double precision :: XNEW(NMAX),C(NMAX),SS(NATJ,NMAX),X(JJ),DMIX(400),DM(NMAX) &
     ,XOLD(NMAX)
-double precision :: XST,ZST,XSTR,XEND
-integer :: IPAR(*)
-integer :: IRMAX,IREFINE,JJ,J,NMAX,NATJ,JOLD
+double precision :: XST,ZST,XSTR,XEND,DMAX
+integer :: IPAR(*),IW(*)
+integer :: IRMAX,IREFINE,JJ,J,NMAX,NATJ,JOLD,NEQ
 
-        JOLD=JJ
-      DO J=1, JJ
-          DM(J)=DMIX(J)
-          XOLD(J)= X(J)
-      END DO
-      IRMAX = 400
+!        JOLD=JJ
+!      DO J=1, JJ
+!          DM(J)=DMIX(J)
+!          XOLD(J)= X(J)
+!      END DO
+!      IRMAX = 400
       CALL XFIND(X,C,ZST,XST)
-      CALL GRIDGEN(XSTR,XEND,XST,XNEW,IRMAX,IREFINE)
-      CALL COMPRESSZMF(X,C,JJ,XNEW,SS,IRMAX,NATJ,XST)
-!      do J=1,JJ
-!      write(*,*) S(NATJ,J)
-!      end do
-      JJ=IRMAX   
-      CALL DCOPY (NATJ*JJ, SS, 1, C, 1)
-      CALL DCOPY (JJ,XNEW,1,X,1) 
-      DO J = 1, JJ
-         CALL TEMP (JOLD, X(J), XOLD, DM,DMIX(J))
-      ENDDO 
+!      if (XST .GT. 0.4) then
+!      CALL GRIDGEN(XSTR,XEND,XST,XNEW,IRMAX,IREFINE)
+!      else 
+!      CALL GRIDGENTWO(XSTR,XEND,XST,XNEW,IRMAX)
+!      end if
+!      CALL COMPRESSZMF(X,C,JJ,XNEW,SS,IRMAX,NATJ,XST)
+!!      do J=1,JJ
+!!      write(*,*) S(NATJ,J)
+!!      end do
+!      JJ=IRMAX   
+!      CALL DCOPY (NATJ*JJ, SS, 1, C, 1)
+!      CALL DCOPY (JJ,XNEW,1,X,1) 
+      !DO J = 1, JJ
+      !   CALL TEMP (JOLD, X(J), XOLD, DM,DMIX(J))
+      !ENDDO 
+      !temporary DMAX
+      DMAX=3.06
+      do J=1,JJ
+          DMIX(J)=0.0
+      end do    
+      CALL DMIXSETUP(X,JJ,DMAX,XST,DMIX,XSTR)
       IPAR(3)=NATJ*JJ
       IPAR(4)=JJ
-   END SUBROUTINE updategridzmf             
+!      NEQ=NATJ*JJ
+!      IW(27) = LENWP-NEQ
+!      IW(28) = NEQ
+END SUBROUTINE updategridzmf             
+    
+SUBROUTINE GRIDGENTWO(XSTR,XEND,XST,XNEW,IRMAX)
+implicit none
+double precision :: XSTR, XEND, XST,DX
+double precision :: XNEW(IRMAX)
+integer :: IRMAX,JJ,ZONE_1,I
 
+XNEW(1)=XSTR
+ZONE_1=100
+DX = 0.004
+DO I=2,ZONE_1
+XNEW(I)=XNEW(I-1)+DX
+END DO
+I=ZONE_1
+DO WHILE (XNEW(I) .LE. XEND)
+    XNEW(I+1)=XNEW(I)+((XNEW(I)-XNEW(I-1))*1.03)
+    I=I+1
+END DO
+XNEW(I)=XEND
+IRMAX=I
+END SUBROUTINE GRIDGENTWO
+
+SUBROUTINE DMIXSETUP(X,JJ,DMAX,XST,DMIX,XSTR)
+implicit none
+
+double precision :: x(1000),dmix(400)
+double precision :: dmax,xst,xstr,gap
+integer :: jj,j
+
+gap=0.35
+if (xst .gt. gap) then 
+do j=1,jj
+    if (x(j) .ge. xst) then
+        dmix(j)=-(DMAX-0.178)/(2.0)*(x(j)-xst)+dmax
+        if (dmix(j) .lt. 0.178) dmix(j)=0.178
+    else
+    dmix(j)=0.178
+    endif
+end do    
+else
+do j=1,jj
+    if (x(j) .gt. gap) then
+        dmix(j)=-(DMAX-0.178)/(2.0)*(x(j)-gap)+dmax
+        if (dmix(j) .lt. 0.178) dmix(j)=0.178
+    else
+    dmix(j)=0.178
+    endif
+end do    
+
+
+end if
+
+
+
+
+
+end subroutine DMIXSETUP
 END MODULE f90_module
