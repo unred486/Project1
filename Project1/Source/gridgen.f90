@@ -457,7 +457,7 @@ end subroutine
 Subroutine XFIND(XXZ,ZGIVEN,ZST,XST)
 implicit none
 
-DOUBLE PRECISION :: XXZ(*),ZGIVEN(1000)
+DOUBLE PRECISION :: XXZ(*),ZGIVEN(1500)
 DOUBLE PRECISION :: XST,ZST
 INTEGER :: J
 J=1
@@ -478,31 +478,39 @@ subroutine updategridzmf(NATJ,JJ,NMAX,C,X,DMIX,XST,ZST,XSTR,XEND,IPAR,&
 use var
 implicit none
 
-double precision :: XNEW(NMAX),C(NMAX),SS(NATJ,NMAX),X(JJ),DMIX(NMAX),DM(NMAX) &
+double precision :: XNEW(NMAX),C(NMAX),SS(NATJ,NMAX),X(NMAX),DMIX(NMAX),DM(NMAX) &
     ,XOLD(NMAX)
 double precision :: XST,ZST,XSTR,XEND,DMAX
 integer :: IPAR(*),IW(*)
 integer :: IRMAX,IREFINE,JJ,J,NMAX,NATJ,JOLD,NEQ
 
-!        JOLD=JJ
+        JOLD=JJ
 !      DO J=1, JJ
 !          DM(J)=DMIX(J)
 !          XOLD(J)= X(J)
 !      END DO
 !      IRMAX = 400
       CALL XFIND(X,C,ZST,XST)
-      if (XST .GT. 0.4) then
-      CALL GRIDGEN(XSTR,XEND,XST,XNEW,IRMAX,IREFINE)
-      else 
+      IF (XST .GT. 0.35) THEN
+      write(*,*)'hello'
+      
+      END IF
+      !if (XST .GT. 0.35) then
+      !CALL GRIDGEN(XSTR,XEND,XST,XNEW,IRMAX,IREFINE)
+      !else 
       CALL GRIDGENTWO(XSTR,XEND,XST,XNEW,JJ,NMAX,IRMAX)
-      end if
-      CALL COMPRESSZMF(X,C,JJ,XNEW,SS,IRMAX,NATJ,XST)
+      !end if
+      CALL COMPRESSZMF(X,C,JOLD,XNEW,SS,IRMAX,NATJ,XST)
 !      do J=1,JJ
 !      write(*,*) S(NATJ,J)
 !      end do
       JJ=IRMAX   
       CALL DCOPY (NATJ*JJ, SS, 1, C, 1)
-      CALL DCOPY (JJ,XNEW,1,X,1) 
+      !CALL DCOPY (JJ,XNEW,1,X,1)
+      DO J=1,JJ
+          X(J)=XNEW(J)
+      END DO
+      
       !DO J = 1, JJ
       !   CALL TEMP (JOLD, X(J), XOLD, DM,DMIX(J))
       !ENDDO 
@@ -514,7 +522,7 @@ integer :: IRMAX,IREFINE,JJ,J,NMAX,NATJ,JOLD,NEQ
       CALL DMIXSETUP(X,JJ,DMAX,XST,DMIX,XSTR)
       IPAR(3)=NATJ*JJ
       IPAR(4)=JJ
-!      NEQ=NATJ*JJ
+      NEQ=NATJ*JJ
 !      IW(27) = LENWP-NEQ
 !      IW(28) = NEQ
 END SUBROUTINE updategridzmf             
@@ -523,24 +531,112 @@ SUBROUTINE GRIDGENTWO(XSTR,XEND,XST,XNEW,JJ,NMAX,IRMAX)
 implicit none
 double precision :: XSTR, XEND, XST,DX
 double precision :: XNEW(NMAX)
-integer :: IRMAX,JJ,ZONE_1,I,J,NMAX
+integer :: IRMAX,JJ,ZONE_1,ZONE_2,I,J,NMAX,IREFINE
 
+if (XST .GT. 0.35) then 
+    JJ=1500
+CALL GRIDGEN3(XSTR,XEND,XST,XNEW,JJ,IREFINE)
+IRMAX=JJ
+else
 XNEW(1)=XSTR
-ZONE_1=800
+ZONE_2=1000
 DX = 0.0001
-DO I=2,ZONE_1
+DO I=2,ZONE_2
 XNEW(I)=XNEW(I-1)+DX
 if (abs(xst-xnew(i)) .lt. dx/2.0) XNEW(I)=XST
 END DO
-I=ZONE_1
+I=ZONE_2
 DO WHILE (XNEW(I) .LE. XEND)
     XNEW(I+1)=XNEW(I)+((XNEW(I)-XNEW(I-1))*1.03)
     I=I+1
 END DO
 XNEW(I)=XEND
 IRMAX=I
+ENDIF
 
 END SUBROUTINE GRIDGENTWO
+
+SUBROUTINE GRIDGEN3(XSTR,XEND,XFLAME,XNEW,JJ,IREFINE)
+      ! Written By HAN JU LEE  1/7/2019
+      ! A subroutine that calculates a new grid according to the 
+      ! algorithm written in Vivien Lacoustre's PhD Dissertation
+      ! For Region 3, instead of the algorithm, a geometric series is used
+      ! XSTR = Position of Starting Element
+      ! XEND = Position of Ending Element
+      ! XFLAME = Center of Reaction
+      ! XNEW = New Grid for Update
+      ! JJ = NUmber of Mesh Points
+      ! A, Alpha = Algorithm Generation Constants
+      ! Dx = Increment Size in Reaction Region
+      ! IRN1 = Number of Points in Pre-Reaction Region
+      ! IRN2 = Number of Points in Reaction Region
+      ! IRN3 = Number of Points in Post - Reaction Region
+
+      IMPLICIT DOUBLE PRECISION (A-H, O-Z), INTEGER (I-N)
+            
+      PARAMETER  (A = 1.0, Alpha = 0.1)
+      PARAMETER  (Dx = 0.0001 , RATIO = 1.005)
+      DOUBLE PRECISION, DIMENSION(1500) ::  XINT
+      double precision ::  XMID
+      DOUBLE PRECISION, DIMENSION(1500) :: XNEW
+      !Calculating how many points are needed in each region
+      IRN1 = 200
+      IRN2 = 100
+      IRN3 = IRN1+IRN2
+      
+      !WRITE(LTEST,*) XFLAME
+      XMID = (XSTR + XFLAME)/2.0
+      
+
+      !Calculating the intermediate mesh x_i for region 1 
+       DO J = 1, IRN1 
+         XINT(J) = (REAL(J)-1.0)/(REAL(IRN1)-1.0)*(XFLAME-(Dx*IRN2/2) &
+         -XSTR)+XSTR
+       END DO
+
+
+       !Calculating Region Sum For SUM ( A EXP(-alpha(xi-xmid)^2)) term
+       XSUM = XSTR
+       DO J=2,IRN1
+         XSUM = A*EXP(-Alpha*(XINT(J)-XMID)**2) + XSUM
+       END DO
+      
+       DO J = 1,JJ 
+         IF (J .LE. IRN1) THEN
+         !Calculating ith Sum for SUM ( A EXP(-alpha(xi-xmid)^2)) term
+             !XSUM2=XSTR
+             !IF (J .GE. 2) THEN
+             !   DO K=2,J
+             !      XSUM2 = A*EXP(-Alpha*(XINT(K)-XMID)**2) + XSUM2
+             !   END DO
+             !END IF       
+             !    XNEW(J)= XSTR+(XSUM2-XSTR)/(XSUM-XSTR)*(XFLAME- &
+             !    (Dx*IRN2/2)-XSTR)
+             XNEW(J)=(dble(J)-1.0)/(dble(IRN1)-1.0)*(XFLAME-(DX*dble(IRN2)/2.0) &
+                 -XSTR)+XSTR
+        
+         !Creating Geometric Sequence for Region 3
+         ELSE IF (J .GT. IRN3) THEN
+                 XNEW(J)= RATIO*(XNEW(J-1)-XNEW(J-2))+XNEW(J-1)
+                 IF (XNEW(J) .GE. XEND) THEN
+                 XNEW(J)=XEND
+                 JJ = J
+                 EXIT
+                 END IF
+        !Creating a uniform mesh near flame region
+         ELSE
+             DO K =1, IRN2
+                 XNEW(J) = XNEW(J-1)+Dx
+             END DO
+         END IF         
+       END DO 
+       DO J = 1 , JJ
+       !WRITE(LTEST,*) XNEW(J)
+       END DO
+       
+      IREFINE=0
+      RETURN
+end subroutine GRIDGEN3
 
 SUBROUTINE DMIXSETUP(X,JJ,DMAX,XST,DMIX,XSTR)
 implicit none

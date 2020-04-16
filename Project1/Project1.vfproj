@@ -55,13 +55,12 @@
 		<File RelativePath="..\..\Source\rdkey.f"/>
 		<File RelativePath="..\..\Source\rescvcm.f"/>
 		<File RelativePath="..\..\Source\restrt.f"/>
-		<File RelativePath=".\RESZMF.f90"/>
+		<File RelativePath=".\Source\RESZMF.f90"/>
 		<File RelativePath="..\..\Source\sphdifb.f"/>
 		<File RelativePath="..\..\Source\start.f"/>
 		<File RelativePath="..\..\Source\temp.f"/>
 		<File RelativePath="..\..\Source\tranlib.f"/>
 		<File RelativePath="..\..\Source\upcase.f"/>
-		<File RelativePath=".\zacpsolzmf.for"/>
-		<File RelativePath=".\zmfinit.for"/>
-		<File RelativePath=".\zmixfrac.f90"/></Filter></Files>
+		<File RelativePath=".\Source\zmfinit.for"/>
+		<File RelativePath=".\Source\zmixfrac.f90"/></Filter></Files>
 	<Globals/></VisualStudioProject>

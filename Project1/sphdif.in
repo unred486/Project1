@@ -81,7 +81,7 @@ ZST 0.3
 DIRC 1               ! 0= Direct method 1 = Krylov method in cvcm reactor calc  
 TIME 10   1.000E-7    ! Desired Timestep size                                   
 / MIN AND MAX TIME STEP, MAXIMUM TIME (SHUT DOWN WHEN REACHED)                  
-MXTM 0.5E-2           ! MAXIMUM TIME - STOP SIMULATION AT 3,000,000 Seconds     
+MXTM 5.0E-2           ! MAXIMUM TIME - STOP SIMULATION AT 3,000,000 Seconds     
 /                                                                               
 / Tolerances for the Newton iteration                                           
 ATOL 1.0E-3           ! Absolute tolerance                                     
