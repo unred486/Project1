@@ -75,8 +75,8 @@
 !C*****END precision > single
 !C
       INTEGER :: IW(*),INFO(20),IPAR(4)
-      DOUBLE PRECISION :: C(NMAX),RW(*),CCPRIME(NATJ*NMAX),RPAR(4),  &
-       RTOL(1),ATOL(1),X(NMAX),DMIX(NMAX)
+      DOUBLE PRECISION :: C(NMAX),RW(5*NMAX + 2*((NMAX/3) + 1)+91+19*NMAX) &
+          ,CCPRIME(NATJ*NMAX),RPAR(4),  RTOL(1),ATOL(1),X(NMAX),DMIX(NMAX)
       DOUBLE PRECISION :: DT1,TOUT,T,DT2,XST,ZST,XSTR,XEND,ZBUR,ZAMB
       INTEGER :: LOUT, NEQ, NATJ, NHBW,ML,MU,JJ,J,NOUT,IOUT &
                 ,IDID,IMOD3,NMAX 
@@ -119,6 +119,8 @@
         IPAR(3)=NEQ
         IPAR(4)=JJ
       IOUT = 0
+!      CALL updategridzmf(NATJ,JJ,NMAX,C,X,DMIX,XST,ZST,XSTR,XEND,&
+!          IPAR, IW,NEQ)  
       CALL SETPARzmf(X,JJ,DMIX)
       DO WHILE(1)
 !C       SETPAR sets pointers to arrays needed for calculation
@@ -129,10 +131,14 @@
         CALL DDASPK (RESZMF, NEQ, T, C, CCPRIME, TOUT, INFO, RTOL, &
                  ATOL, IDID, RW,LRW, IW,LIW, RPAR, IPAR,           & 
                  DBANJA, DBANPS)
+        TOUT=TOUT+DT1
         CALL updategridzmf(NATJ,JJ,NMAX,C,X,DMIX,XST,ZST,XSTR,XEND,&
-          IPAR, IW,NEQ)    
+          IPAR, IW,NEQ,TOUT)    
         CALL SETPARzmf(X,JJ,DMIX)
-
+!        CALL zmfINIT (C, CCPRIME, X, JJ,NATJ,NEQ,RPAR,ZBUR,ZAMB)  
+!        INFO(1)=0
+!        T=TOUT
+        
 !c        IF (IDID .EQ. -1) GO TO 100
 !C       Printing out the solver status 
 !c        CALL PRINTCVCM(IW,RW,LOUT,T)   
@@ -142,12 +148,13 @@
         IF (IMOD3 .EQ. 0) THEN 
             CALL OUTZMF (T,C,CCPRIME,LOUT,IDID,IW,RW,JJ,NHBW,X,ZST,DMIX) 
         ENDIF
-        TOUT=TOUT+DT1
+
+        
         IOUT=IOUT+1
 !C       EXIT CONDITION
 !C       IF TOUT REACHES MAX TIME, program exits
 !C    or IF ERROR CONDITION BY DDASPK is reached, program exits
-        IF (IDID .LT. -1) THEN            
+        IF (IDID .LE. -1) THEN            
             WRITE(LOUT,*)'error condition has been reached'
             CALL OUTZMF (T,C,CCPRIME,LOUT,IDID,IW,RW,JJ,NHBW,X,ZST,DMIX) 
             WRITE(LOUT,73) IDID
@@ -156,9 +163,9 @@
         
         IF (TIMMX .LT. TOUT) THEN
 !C       Last Time step of DDASPK before reporting
-            CALL updategridzmf(NATJ,JJ,NMAX,C,X,DMIX,XST,ZST,XSTR,XEND, &
-                IPAR,IW,NEQ)
-            CALL SETPARzmf(X,JJ,DMIX)
+!            CALL updategridzmf(NATJ,JJ,NMAX,C,X,DMIX,XST,ZST,XSTR,XEND, &
+!                IPAR,IW,NEQ)
+!            CALL SETPARzmf(X,JJ,DMIX)
             CALL DDASPK (RESZMF, NEQ, T, C, CCPRIME, TOUT, INFO, RTOL,  &
                   ATOL,IDID, RW,LRW, IW,LIW, RPAR, IPAR,      &
                  DBANJA, DBANPS)
