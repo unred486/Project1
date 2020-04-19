@@ -6,7 +6,7 @@
 !C   subroutine uses dasppk solver. 
 
       SUBROUTINE zmf(NATJ,JJ,LOUT,NMAX,X,RW,IW,C,INFO,DT1,RTOL,ATOL,DMIX, &
-          XST,ZST,XSTR,XEND,ZBUR,ZAMB)
+          XST,ZST,XSTR,XEND,ZBUR,ZAMB,LRCRVR,TOUT)
 !C       zmixfrac.f90 starts the constant volume and constant mass calculation
 !C       Calls zmfINIT, SETPARzmf, DDASPK,  OUTzmf subroutines
 
@@ -77,9 +77,11 @@
       INTEGER :: IW(*),INFO(20),IPAR(4)
       DOUBLE PRECISION :: C(NMAX),RW(5*NMAX + 2*((NMAX/3) + 1)+91+19*NMAX) &
           ,CCPRIME(NATJ*NMAX),RPAR(4),  RTOL(1),ATOL(1),X(NMAX),DMIX(NMAX)
-      DOUBLE PRECISION :: DT1,TOUT,T,DT2,XST,ZST,XSTR,XEND,ZBUR,ZAMB
+      DOUBLE PRECISION :: DT1,TOUT,T,DT2,XST,ZST,XSTR,XEND,ZBUR,ZAMB, &
+          XSTOLD
       INTEGER :: LOUT, NEQ, NATJ, NHBW,ML,MU,JJ,J,NOUT,IOUT &
-                ,IDID,IMOD3,NMAX 
+                ,IDID,IMOD3,NMAX,JOLD,LRCRVR,IREFLAG
+      XSTOLD=XST
       NEQ=NATJ*JJ
       NHBW=1   
 !C       Refer to DDASPK.F subroutine for information about INFO array
@@ -111,8 +113,14 @@
     ENDIF
         
 !C Set the initial T and TOUT, and call CINIT to set initial values.  
+IF (LRSTRT) then
+    T=TOUT
+    TOUT=T+DT1
+else
       T = 0.0D0
       TOUT = DT1
+endif
+
       CALL zmfINIT (C, CCPRIME, X, JJ,NATJ,NEQ,RPAR,ZBUR,ZAMB)  
 !c      WRITE (LOUT,40)
 !c      WRITE (*,40)      
@@ -127,13 +135,22 @@
 !C       in varray module for use by RESCVCM subroutine which calculates 
 !C       residual 
 !C       Calling main solver, DDASPK subroutine
-100     CONTINUE
+100 CONTINUE
+        JOLD=JJ
         CALL DDASPK (RESZMF, NEQ, T, C, CCPRIME, TOUT, INFO, RTOL, &
                  ATOL, IDID, RW,LRW, IW,LIW, RPAR, IPAR,           & 
                  DBANJA, DBANPS)
         TOUT=TOUT+DT1
         CALL updategridzmf(NATJ,JJ,NMAX,C,X,DMIX,XST,ZST,XSTR,XEND,&
-          IPAR, IW,NEQ,TOUT)    
+          IPAR, IW,NEQ,TOUT,XSTOLD,IREFLAG)    
+        IF ((JOLD .NE. JJ) .OR. (IREFLAG .eq. 1)) THEN 
+            CALL OUTZMF (T,C,CCPRIME,LOUT,IDID,IW,RW,JJ,NHBW,X,ZST,DMIX) 
+                WRITE (LRCRVR) NATJ, JJ,TOUT
+                WRITE (LRCRVR) (X(J), J=1,JJ)
+                WRITE (LRCRVR) (C(J), J=1,JJ)
+                write(LOUT,*) 'save file stored'
+            go to 210
+        end if
         CALL SETPARzmf(X,JJ,DMIX)
 !        CALL zmfINIT (C, CCPRIME, X, JJ,NATJ,NEQ,RPAR,ZBUR,ZAMB)  
 !        INFO(1)=0
@@ -170,6 +187,10 @@
                   ATOL,IDID, RW,LRW, IW,LIW, RPAR, IPAR,      &
                  DBANJA, DBANPS)
             CALL OUTZMF (T,C,CCPRIME,LOUT,IDID,IW,RW,JJ,NHBW,X,ZST,DMIX) 
+                WRITE (LRCRVR) NATJ, JJ,TOUT
+                WRITE (LRCRVR) (X(J), J=1,JJ)
+                WRITE (LRCRVR) (C(J), J=1,JJ)
+                write(LOUT,*) 'save file stored'            
             WRITE(LOUT,160)TOUT 
             GO TO 210
         ENDIF     

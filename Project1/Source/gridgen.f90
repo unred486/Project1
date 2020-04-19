@@ -465,59 +465,89 @@ DO WHILE (ZGIVEN(J) .GE. ZST)
 J=J+1
 END DO
 J=J-1
+
+IF (J .eq. 0) then
+    write(*,*) 'mixture fraction at the burner is lower than the &
+        stoichiometric mixture fraction value. Check the simulation condition &
+        return'
+    stop
+else
+    
 IF (ZGIVEN(J) .GT. ZST) THEN
 XST=XXZ(J)+(XXZ(J+1)-XXZ(J))/(ZGIVEN(J+1)-ZGIVEN(J))*(ZST-ZGIVEN(J))
 ELSE
 XST=XXZ(J)
 END IF
+end if
 
 END Subroutine XFIND
 
 subroutine updategridzmf(NATJ,JJ,NMAX,C,X,DMIX,XST,ZST,XSTR,XEND,IPAR,&
-    IW,NEQ,TOUT)
+    IW,NEQ,TOUT,XSTOLD,IRESTARTFLAG)
 use var
 implicit none
 
 double precision :: XNEW(NMAX),C(NMAX),SS(NATJ,NMAX),X(NMAX),DMIX(NMAX),DM(NMAX) &
     ,XOLD(NMAX)
-double precision :: XST,ZST,XSTR,XEND,DMAX,T_initial,T,TOUT,T_rate
+double precision :: XST,ZST,XSTR,XEND,DMAX,T_initial,T,TOUT,T_rate,XSTOLD
 integer :: IPAR(*),IW(*)
-integer :: IRMAX,IREFINE,JJ,J,NMAX,NATJ,JOLD,NEQ
+integer :: IRMAX,IREFINE,JJ,J,NMAX,NATJ,JOLD,NEQ,IRESTARTFLAG
 
         JOLD=JJ
-!      DO J=1, JJ
-!          DM(J)=DMIX(J)
-!          XOLD(J)= X(J)
-!      END DO
-!      IRMAX = 400
+      DO J=1, JJ
+          DM(J)=DMIX(J)
+          XOLD(J)= X(J)
+      END DO
+      IRMAX = 400
       CALL XFIND(X,C,ZST,XST)
-!      !IF (XST .GT. 0.336) THEN
-!      !write(*,*)'hello'
-!      !
-!      !END IF
-!      !if (XST .GT. 0.35) then
-!      !CALL GRIDGEN(XSTR,XEND,XST,XNEW,IRMAX,IREFINE)
-!      !else 
-!      CALL GRIDGENTWO(XSTR,XEND,XST,XNEW,JJ,NMAX,IRMAX)
-!      !end if
-!      CALL COMPRESSZMF(X,C,JOLD,XNEW,SS,IRMAX,NATJ,XST)
-!!      do J=1,JJ
-!!      write(*,*) S(NATJ,J)
-!!      end do
-!      JJ=IRMAX   
-!      CALL DCOPY (NATJ*JJ, SS, 1, C, 1)
-!      !CALL DCOPY (JJ,XNEW,1,X,1)
-!      DO J=1,JJ
-!          X(J)=XNEW(J)
-!      END DO
-!      
-!      !DO J = 1, JJ
-!      !   CALL TEMP (JOLD, X(J), XOLD, DM,DMIX(J))
-!      !ENDDO 
-!      !temporary DMAX
+      !IF (XST .GT. 0.336) THEN
+      !write(*,*)'hello'
+      !
+      !END IF
+      !if (XST .GT. 0.35) then
+      !CALL GRIDGEN(XSTR,XEND,XST,XNEW,IRMAX,IREFINE)
+      !else
+      IF (abs(XST-XSTOLD) .GT. 0.05) then
+      CALL GRIDGENTWO(XSTR,XEND,XST,XNEW,JJ,NMAX,IRMAX)
+      !end if
+      CALL COMPRESSZMF(X,C,JOLD,XNEW,SS,IRMAX,NATJ,XST)
+!      do J=1,JJ
+!      write(*,*) S(NATJ,J)
+!      end do
+      JJ=IRMAX   
+      CALL DCOPY (NATJ*JJ, SS, 1, C, 1)
+      !CALL DCOPY (JJ,XNEW,1,X,1)
+      DO J=1,JJ
+          X(J)=XNEW(J)
+      END DO
+      IRESTARTFLAG=1
+      endif 
+      !DO J = 1, JJ
+      !   CALL TEMP (JOLD, X(J), XOLD, DM,DMIX(J))
+      !ENDDO 
+      !temporary DMAX
       IF (LDTIME) then
       T_initial=2300
-      T_rate=-300
+      IF (TOUT .LT. 0.2) then
+      T_rate=-3000
+      elseif ((TOUT .GE. 0.2) .and. (TOUT .LT. 2.0)) then
+          T_rate=-100
+      elseif ((TOUT .GE. 2.0) .and. (TOUT .LT. 5.0)) then
+          T_rate=-50
+      elseif ((TOUT .GE. 5.0) .and. (TOUT .LT. 8.0)) then
+          T_rate =-25
+      elseif ((TOUT .GE. 8.0) .and. (TOUT .LT. 10.0)) then
+          T_rate =-15
+      elseif ((TOUT .GE. 10.0) .and. (TOUT .LT. 14.0)) then
+          T_Rate =-5
+      elseif ((TOUT .GE. 14.0) .and. (TOUT .LT. 18.0)) then
+          T_rate =-1
+      elseif ((TOUT .GE. 18.0) .and. (TOUT .LT. 30.0)) then
+          T_rate =-0.1
+      else
+          T_Rate = -0.001
+      endif
+      
       T=T_initial+T_rate*TOUT
       DMAX=4.5329e-5*T**1.5
       else 
@@ -541,7 +571,7 @@ double precision :: XSTR, XEND, XST,DX
 double precision :: XNEW(NMAX)
 integer :: IRMAX,JJ,ZONE_1,ZONE_2,I,J,NMAX,IREFINE
 
-if (XST .LT. 1.0) then 
+if (XST .GT. 0.4) then 
     JJ=1500
 CALL GRIDGEN3(XSTR,XEND,XST,XNEW,JJ,IREFINE)
 IRMAX=JJ
@@ -583,14 +613,15 @@ SUBROUTINE GRIDGEN3(XSTR,XEND,XFLAME,XNEW,JJ,IREFINE)
       IMPLICIT DOUBLE PRECISION (A-H, O-Z), INTEGER (I-N)
             
       PARAMETER  (A = 1.0, Alpha = 0.1)
-      PARAMETER  (Dx = 0.0001 , RATIO = 1.005)
+      PARAMETER  (Dx = 0.0001 , RATIO = 1.005,RATIO2=1.1)
       DOUBLE PRECISION, DIMENSION(1500) ::  XINT
       double precision ::  XMID
       DOUBLE PRECISION, DIMENSION(1500) :: XNEW
       !Calculating how many points are needed in each region
       IRN1 = 100
       IRN2 = 60
-      IRN3 = IRN1+IRN2
+      IRN3 = 400
+      IRN4 = IRN1+IRN2+IRN3
       
       !WRITE(LTEST,*) XFLAME
       XMID = (XSTR + XFLAME)/2.0
@@ -624,8 +655,11 @@ SUBROUTINE GRIDGEN3(XSTR,XEND,XFLAME,XNEW,JJ,IREFINE)
                  -XSTR)+XSTR
         
          !Creating Geometric Sequence for Region 3
-         ELSE IF (J .GT. IRN3) THEN
+         ELSE IF ((J .GT. IRN1+IRN2) .and. (J .LE. IRN4)) then
                  XNEW(J)= RATIO*(XNEW(J-1)-XNEW(J-2))+XNEW(J-1)
+         !Creating Geometric Sequence for Region 4
+         ELSE IF (J .GT. IRN4) THEN
+                 XNEW(J)= RATIO2*(XNEW(J-1)-XNEW(J-2))+XNEW(J-1)
                  IF (XNEW(J) .GE. XEND) THEN
                  XNEW(J)=XEND
                  JJ = J

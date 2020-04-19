@@ -1,6 +1,6 @@
 C-----------------------------------------------------------------------
       COMMON /LOGICAL/ LBURNR, LTIME, LTIME2, LMOLE, LENRGY, LTDIF, LUMESH,
-     1        LRSTRT, LCNTUE, LUSTGV, LASEN, LRSEN, LESEN, LMSEN, LPSEN, 
+     1        LCNTUE, LUSTGV, LASEN, LRSEN, LESEN, LMSEN, LPSEN, 
      3        LMULTI, LVCOR, LHSEN, LADAPT, ADIAMF, SOOTP, freeMolOnly,
      4        LPREMIX, LCARTE, LHYDRO, LTEST, LSOOTINIT, LNUCL, LSURF,
      5        LOXID, LCOAG, LPOST,LREF,LGLOB
