@@ -161,7 +161,7 @@ endif
 !c        CALL PRINTCVCM(IW,RW,LOUT,T)   
 !C       Printing out the solution variables
         
-        IMOD3 = IOUT - 1000*(IOUT/1000)
+        IMOD3 = IOUT - 10000*(IOUT/10000)
         IF (IMOD3 .EQ. 0) THEN 
             CALL OUTZMF (T,C,CCPRIME,LOUT,IDID,IW,RW,JJ,NHBW,X,ZST,DMIX) 
         ENDIF

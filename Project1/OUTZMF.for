@@ -125,12 +125,12 @@ C       DT1    - time step
      2        'DDASPK TIME STEP INTEGRATION COMPLETE ',/,
      1          '///////////////////////////////////////////////// ',//)
   
-50    FORMAT('X Zmix')
+50    FORMAT('Radius(cm) Zmix')
 51    FORMAT(3ES14.3)      
 8026  FORMAT('VARIABLES=')      
 80298 FORMAT (2 (1PE12.4),2X)
-80276 FORMAT ('Time(s)' 2X 'XST' )
-80277 FORMAT ('X' 2X 'Z' 2X 'D')
+80276 FORMAT ('Time(s)' 2X 'Radius_ST(cm)' )
+80277 FORMAT ('Radius(cm)' 2X 'Z' 2X 'D')
 8029  FORMAT('ZONE T="',1PE11.3,' s"')
 80    FORMAT('At time t = ',ES16.5)
 90    FORMAT(/' Final statistics for this run..'/

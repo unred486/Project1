@@ -530,25 +530,38 @@ integer :: IRMAX,IREFINE,JJ,J,NMAX,NATJ,JOLD,NEQ,IRESTARTFLAG
       T_initial=2300
       IF (TOUT .LT. 0.2) then
       T_rate=-3000
+      T=T_initial+T_rate*TOUT
       elseif ((TOUT .GE. 0.2) .and. (TOUT .LT. 2.0)) then
           T_rate=-100
+          T=T_initial+T_rate*(TOUT-0.2)-3000*0.2
       elseif ((TOUT .GE. 2.0) .and. (TOUT .LT. 5.0)) then
           T_rate=-50
+          T=T_initial+T_rate*(TOUT-2.0)-3000*0.2-100*1.8
       elseif ((TOUT .GE. 5.0) .and. (TOUT .LT. 8.0)) then
           T_rate =-25
+          T=T_initial+T_rate*(TOUT-5.0)-3000*0.2-100*1.8-50*3.0
       elseif ((TOUT .GE. 8.0) .and. (TOUT .LT. 10.0)) then
           T_rate =-15
+          T=T_initial+T_rate*(TOUT-8.0)-3000*0.2-100*1.8-50*3.0-&
+              25*3.0
       elseif ((TOUT .GE. 10.0) .and. (TOUT .LT. 14.0)) then
           T_Rate =-5
+          T=T_initial+T_rate*(TOUT-10.0)-3000*0.2-100*1.8-50*3.0-&
+              25*3.0-30.0
       elseif ((TOUT .GE. 14.0) .and. (TOUT .LT. 18.0)) then
           T_rate =-1
+          T=T_initial+T_rate*(TOUT-14.0)-3000*0.2-100*1.8-50*3.0-&
+              25*3.0-30.0-20.0
       elseif ((TOUT .GE. 18.0) .and. (TOUT .LT. 30.0)) then
           T_rate =-0.1
+          T=T_initial+T_rate*(TOUT-18.0)-3000*0.2-100*1.8-50*3.0-&
+              25*3.0-30.0-20.0-4.0
       else
           T_Rate = -0.001
+          T=T_initial+T_rate*(TOUT-30.0)-3000*0.2-100*1.8-50*3.0-&
+              25*3.0-30.0-20.0-4.0-0.1*12
       endif
       
-      T=T_initial+T_rate*TOUT
       DMAX=4.5329e-5*T**1.5
       else 
         DMAX=5.0

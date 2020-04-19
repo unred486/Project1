@@ -54,6 +54,7 @@
 		<File RelativePath="..\..\Source\publicarray.f"/>
 		<File RelativePath="..\..\Source\rdkey.f"/>
 		<File RelativePath="..\..\Source\rescvcm.f"/>
+		<File RelativePath=".\Source\restart.f90"/>
 		<File RelativePath="..\..\Source\restrt.f"/>
 		<File RelativePath=".\Source\RESZMF.f90"/>
 		<File RelativePath="..\..\Source\sphdifb.f"/>
