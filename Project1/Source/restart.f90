@@ -1,4 +1,4 @@
-subroutine restart(LRCRVR,X,S,JJ,TOUT,NMAX,NATJ,DMIX,ZST,XSTR,XST)
+subroutine restart(LRCRVR,X,S,JJ,TOUT,NMAX,NATJ,DMIX,ZST,XSTR,XST,DMAX)
     use var
     use f90_module
     implicit none
@@ -6,13 +6,12 @@ subroutine restart(LRCRVR,X,S,JJ,TOUT,NMAX,NATJ,DMIX,ZST,XSTR,XST)
     double precision :: X(NMAX),S(NMAX),DMIX(NMAX)
     double precision :: TOUT,ZST,XST,DMAX,XSTR
     
-    READ (LRCRVR) NATJ, JJ,TOUT
+    READ (LRCRVR) NATJ, JJ,TOUT,DMAX
     READ (LRCRVR) (X(J), J=1,JJ)
     READ (LRCRVR) (S(J), J=1,JJ)
     REWIND(LRCRVR)
 
     CALL XFIND(X,S,ZST,XST)
-    DMAX=5.00
     do J=1,JJ
           DMIX(J)=0.0
     end do    

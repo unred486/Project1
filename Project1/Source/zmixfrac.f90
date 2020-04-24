@@ -6,7 +6,7 @@
 !C   subroutine uses dasppk solver. 
 
       SUBROUTINE zmf(NATJ,JJ,LOUT,NMAX,X,RW,IW,C,INFO,DT1,RTOL,ATOL,DMIX, &
-          XST,ZST,XSTR,XEND,ZBUR,ZAMB,LRCRVR,TOUT)
+          XST,ZST,XSTR,XEND,ZBUR,ZAMB,LRCRVR,TOUT,FRZTIM,DMAX)
 !C       zmixfrac.f90 starts the constant volume and constant mass calculation
 !C       Calls zmfINIT, SETPARzmf, DDASPK,  OUTzmf subroutines
 
@@ -78,7 +78,7 @@
       DOUBLE PRECISION :: C(NMAX),RW(5*NMAX + 2*((NMAX/3) + 1)+91+19*NMAX) &
           ,CCPRIME(NATJ*NMAX),RPAR(4),  RTOL(1),ATOL(1),X(NMAX),DMIX(NMAX)
       DOUBLE PRECISION :: DT1,TOUT,T,DT2,XST,ZST,XSTR,XEND,ZBUR,ZAMB, &
-          XSTOLD
+          XSTOLD,FRZTIM,DMAX
       INTEGER :: LOUT, NEQ, NATJ, NHBW,ML,MU,JJ,J,NOUT,IOUT &
                 ,IDID,IMOD3,NMAX,JOLD,LRCRVR,IREFLAG
       XSTOLD=XST
@@ -142,10 +142,10 @@ endif
                  DBANJA, DBANPS)
         TOUT=TOUT+DT1
         CALL updategridzmf(NATJ,JJ,NMAX,C,X,DMIX,XST,ZST,XSTR,XEND,&
-          IPAR, IW,NEQ,TOUT,XSTOLD,IREFLAG)    
+          IPAR, IW,NEQ,TOUT,XSTOLD,IREFLAG,FRZTIM,DMAX)    
         IF ((JOLD .NE. JJ) .OR. (IREFLAG .eq. 1)) THEN 
             CALL OUTZMF (T,C,CCPRIME,LOUT,IDID,IW,RW,JJ,NHBW,X,ZST,DMIX) 
-                WRITE (LRCRVR) NATJ, JJ,TOUT
+                WRITE (LRCRVR) NATJ, JJ,TOUT,DMAX
                 WRITE (LRCRVR) (X(J), J=1,JJ)
                 WRITE (LRCRVR) (C(J), J=1,JJ)
                 write(LOUT,*) 'save file stored'

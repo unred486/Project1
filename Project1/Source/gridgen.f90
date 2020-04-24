@@ -467,7 +467,7 @@ END DO
 J=J-1
 
 IF (J .eq. 0) then
-    write(*,*) 'mixture fraction at the burner is lower than the &
+    write(6,*) 'mixture fraction at the burner is lower than the &
         stoichiometric mixture fraction value. Check the simulation condition &
         return'
     stop
@@ -483,13 +483,13 @@ end if
 END Subroutine XFIND
 
 subroutine updategridzmf(NATJ,JJ,NMAX,C,X,DMIX,XST,ZST,XSTR,XEND,IPAR,&
-    IW,NEQ,TOUT,XSTOLD,IRESTARTFLAG)
+    IW,NEQ,TOUT,XSTOLD,IRESTARTFLAG,FRZTIM,DMAX)
 use var
 implicit none
 
 double precision :: XNEW(NMAX),C(NMAX),SS(NATJ,NMAX),X(NMAX),DMIX(NMAX),DM(NMAX) &
     ,XOLD(NMAX)
-double precision :: XST,ZST,XSTR,XEND,DMAX,T_initial,T,TOUT,T_rate,XSTOLD
+double precision :: XST,ZST,XSTR,XEND,DMAX,T_initial,T,TOUT,T_rate,XSTOLD,FRZTIM
 integer :: IPAR(*),IW(*)
 integer :: IRMAX,IREFINE,JJ,J,NMAX,NATJ,JOLD,NEQ,IRESTARTFLAG
 
@@ -526,46 +526,19 @@ integer :: IRMAX,IREFINE,JJ,J,NMAX,NATJ,JOLD,NEQ,IRESTARTFLAG
       !   CALL TEMP (JOLD, X(J), XOLD, DM,DMIX(J))
       !ENDDO 
       !temporary DMAX
-      IF (LDTIME) then
-      T_initial=2300
-      IF (TOUT .LT. 0.2) then
-      T_rate=-3000
-      T=T_initial+T_rate*TOUT
-      elseif ((TOUT .GE. 0.2) .and. (TOUT .LT. 2.0)) then
-          T_rate=-100
-          T=T_initial+T_rate*(TOUT-0.2)-3000*0.2
-      elseif ((TOUT .GE. 2.0) .and. (TOUT .LT. 5.0)) then
-          T_rate=-50
-          T=T_initial+T_rate*(TOUT-2.0)-3000*0.2-100*1.8
-      elseif ((TOUT .GE. 5.0) .and. (TOUT .LT. 8.0)) then
-          T_rate =-25
-          T=T_initial+T_rate*(TOUT-5.0)-3000*0.2-100*1.8-50*3.0
-      elseif ((TOUT .GE. 8.0) .and. (TOUT .LT. 10.0)) then
-          T_rate =-15
-          T=T_initial+T_rate*(TOUT-8.0)-3000*0.2-100*1.8-50*3.0-&
-              25*3.0
-      elseif ((TOUT .GE. 10.0) .and. (TOUT .LT. 14.0)) then
-          T_Rate =-5
-          T=T_initial+T_rate*(TOUT-10.0)-3000*0.2-100*1.8-50*3.0-&
-              25*3.0-30.0
-      elseif ((TOUT .GE. 14.0) .and. (TOUT .LT. 18.0)) then
-          T_rate =-1
-          T=T_initial+T_rate*(TOUT-14.0)-3000*0.2-100*1.8-50*3.0-&
-              25*3.0-30.0-20.0
-      elseif ((TOUT .GE. 18.0) .and. (TOUT .LT. 30.0)) then
-          T_rate =-0.1
-          T=T_initial+T_rate*(TOUT-18.0)-3000*0.2-100*1.8-50*3.0-&
-              25*3.0-30.0-20.0-4.0
+      IF (LDFRZ) THEN
+          IF (TOUT .GE. FRZTIM) THEN
+              DMAX=DMAX
+          ELSE
+            CALL DMAXCALC(DMAX,TOUT)   
+          endif
       else
-          T_Rate = -0.001
-          T=T_initial+T_rate*(TOUT-30.0)-3000*0.2-100*1.8-50*3.0-&
-              25*3.0-30.0-20.0-4.0-0.1*12
-      endif
-      
-      DMAX=4.5329e-5*T**1.5
+      IF (LDTIME) then
+            CALL DMAXCALC(DMAX,TOUT)
       else 
-        DMAX=5.0
-      end if 
+            DMAX=5.0
+      end if
+      end if
       
       do J=1,JJ
           DMIX(J)=0.0
@@ -737,4 +710,46 @@ do j=1,jj
 end do    
 end if
 end subroutine DMIXSETUP
+
+subroutine DMAXCALC(DMAX,TOUT)
+implicit none
+double precision :: DMAX,TOUT,T_initial,T,T_rate
+
+      T_initial=2300
+      IF (TOUT .LT. 0.2) then
+      T_rate=-3000
+      T=T_initial+T_rate*TOUT
+      elseif ((TOUT .GE. 0.2) .and. (TOUT .LT. 2.0)) then
+          T_rate=-100
+          T=T_initial+T_rate*(TOUT-0.2)-3000*0.2
+      elseif ((TOUT .GE. 2.0) .and. (TOUT .LT. 5.0)) then
+          T_rate=-50
+          T=T_initial+T_rate*(TOUT-2.0)-3000*0.2-100*1.8
+      elseif ((TOUT .GE. 5.0) .and. (TOUT .LT. 8.0)) then
+          T_rate =-25
+          T=T_initial+T_rate*(TOUT-5.0)-3000*0.2-100*1.8-50*3.0
+      elseif ((TOUT .GE. 8.0) .and. (TOUT .LT. 10.0)) then
+          T_rate =-15
+          T=T_initial+T_rate*(TOUT-8.0)-3000*0.2-100*1.8-50*3.0-&
+              25*3.0
+      elseif ((TOUT .GE. 10.0) .and. (TOUT .LT. 14.0)) then
+          T_Rate =-5
+          T=T_initial+T_rate*(TOUT-10.0)-3000*0.2-100*1.8-50*3.0-&
+              25*3.0-30.0
+      elseif ((TOUT .GE. 14.0) .and. (TOUT .LT. 18.0)) then
+          T_rate =-1
+          T=T_initial+T_rate*(TOUT-14.0)-3000*0.2-100*1.8-50*3.0-&
+              25*3.0-30.0-20.0
+      elseif ((TOUT .GE. 18.0) .and. (TOUT .LT. 30.0)) then
+          T_rate =-0.1
+          T=T_initial+T_rate*(TOUT-18.0)-3000*0.2-100*1.8-50*3.0-&
+              25*3.0-30.0-20.0-4.0
+      else
+          T_Rate = -0.001
+          T=T_initial+T_rate*(TOUT-30.0)-3000*0.2-100*1.8-50*3.0-&
+              25*3.0-30.0-20.0-4.0-0.1*12
+      endif
+      
+      DMAX=4.5329e-5*T**1.5
+end subroutine DMAXCALC
 END MODULE f90_module
