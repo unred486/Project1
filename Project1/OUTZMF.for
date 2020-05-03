@@ -62,7 +62,8 @@ C       DT1    - time step
       IMPLICIT NONE
       DOUBLE PRECISION :: U(*),UPRIME(*),RW(*),X(*),DMIX(*)
       INTEGER :: IW(*)
-      DOUBLE PRECISION :: T,dummy,AVDIM,XST,ZST
+      DOUBLE PRECISION :: T,dummy,AVDIM,XST,ZST,JXST,JC_halfwidth, 
+     1    DIFFTIME_outer,DIFFTIME_outer2,DIFFTIME_flame
       INTEGER :: NHBW,IDID,LOUT,J,JJ,K,MBAND,NST,NPE,PRE,
      1          NNI,NLI,NPS,NCFN,NCFL,LFTEMPTIME,LSPACE
       LOGICAL :: exist_ftemp_time
@@ -90,7 +91,24 @@ C       DT1    - time step
       endif 
       
       CALL XFIND(X,U,ZST,XST)
-      WRITE (LFTEMPTIME, 80298) T,XST
+      do J=1,JJ
+        if (x(j) .gt. Xst) then 
+            JXst=J-1
+            exit
+        endif  
+      end do
+      do J=1,JJ
+        if ((U(j) .lt. 1e-4) .and. (X(j) .gt. Xst)) then
+            JC_halfwidth=j
+            exit
+        endif
+      enddo
+      
+      DIFFTIME_flame=XST**2/DMIX(JXst)
+      DIFFTIME_outer=X(JC_halfwidth)**2/DMIX(JC_halfwidth)
+      DIFFTIME_outer2=X(JC_halfwidth)**2/DMIX(JXST)
+      WRITE (LFTEMPTIME, 80298) T,XST,DIFFTIME_flame,DIFFTIME_outer, 
+     1      DIFFTIME_outer2
       
       WRITE(LOUT, 80) T
       WRITE(LOUT,*)
@@ -128,8 +146,9 @@ C       DT1    - time step
 50    FORMAT('Radius(cm) Zmix')
 51    FORMAT(3ES14.3)      
 8026  FORMAT('VARIABLES=')      
-80298 FORMAT (2 (1PE12.4),2X)
-80276 FORMAT ('Time(s)' 2X 'Radius_ST(cm)' )
+80298 FORMAT (5 (1PE12.4),2X)
+80276 FORMAT ('Time(s)' 2X 'Radius_ST(cm)' 2X 'DIFFTIME_XST(s)' 
+     1     2X 'DIFFTIME_outer(s)' 2X 'DIFFTIME_outer2(s)')
 80277 FORMAT ('Radius(cm)' 2X 'Z' 2X 'D')
 8029  FORMAT('ZONE T="',1PE11.3,' s"')
 80    FORMAT('At time t = ',ES16.5)

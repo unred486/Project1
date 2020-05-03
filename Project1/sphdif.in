@@ -30,7 +30,7 @@ ZMIX 100.00 0.0
 /           
 / IF DMIX is given, diffusion profile is fixed as specified by DMIX throughout simulation.                                                                    
 DSMT 		!Smooth Diffusion profile with gaussian profile    
-/DTIM		!IF turned on, maximum diffusion coefficient decreases over time. If not, it is a constant value at 5 m^2/s                                                                                                                    
+DTIM		!IF turned on, maximum diffusion coefficient decreases over time. If not, it is a constant value at 5 m^2/s                                                                                                                    
 /DFRZ 10.0
 / Flame Specificationsi                                                         
 ZST 0.3                                                                                                            
@@ -38,7 +38,7 @@ ZST 0.3
 DIRC 1               ! 0= Direct method 1 = Krylov method in cvcm reactor calc  
 TIME 10   1.000E-6    ! Desired Timestep size                                   
 / MIN AND MAX TIME STEP, MAXIMUM TIME (SHUT DOWN WHEN REACHED)                  
-MXTM 2.0E4           ! MAXIMUM TIME - STOP SIMULATION AT 3,000,000 Seconds     
+MXTM 30.0           ! MAXIMUM TIME - STOP SIMULATION AT 3,000,000 Seconds     
 /                                                                               
 / Tolerances for the Newton iteration                                           
 ATOL 1.0E-3           ! Absolute tolerance                                     

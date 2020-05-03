@@ -152,25 +152,14 @@ endif
             go to 210
         end if
         CALL SETPARzmf(X,JJ,DMIX)
-!        CALL zmfINIT (C, CCPRIME, X, JJ,NATJ,NEQ,RPAR,ZBUR,ZAMB)  
-!        INFO(1)=0
-!        T=TOUT
         
-!c        IF (IDID .EQ. -1) GO TO 100
-!C       Printing out the solver status 
-!c        CALL PRINTCVCM(IW,RW,LOUT,T)   
-!C       Printing out the solution variables
-        
-        IMOD3 = IOUT - 10000*(IOUT/10000)
+        IMOD3 = IOUT - 100*(IOUT/100)
         IF (IMOD3 .EQ. 0) THEN 
             CALL OUTZMF (T,C,CCPRIME,LOUT,IDID,IW,RW,JJ,NHBW,X,ZST,DMIX) 
         ENDIF
 
         
         IOUT=IOUT+1
-!C       EXIT CONDITION
-!C       IF TOUT REACHES MAX TIME, program exits
-!C    or IF ERROR CONDITION BY DDASPK is reached, program exits
         IF (IDID .LE. -1) THEN            
             WRITE(LOUT,*)'error condition has been reached'
             CALL OUTZMF (T,C,CCPRIME,LOUT,IDID,IW,RW,JJ,NHBW,X,ZST,DMIX) 
@@ -179,15 +168,11 @@ endif
         END IF
         
         IF (TIMMX .LT. TOUT) THEN
-!C       Last Time step of DDASPK before reporting
-!            CALL updategridzmf(NATJ,JJ,NMAX,C,X,DMIX,XST,ZST,XSTR,XEND, &
-!                IPAR,IW,NEQ)
-!            CALL SETPARzmf(X,JJ,DMIX)
             CALL DDASPK (RESZMF, NEQ, T, C, CCPRIME, TOUT, INFO, RTOL,  &
                   ATOL,IDID, RW,LRW, IW,LIW, RPAR, IPAR,      &
                  DBANJA, DBANPS)
             CALL OUTZMF (T,C,CCPRIME,LOUT,IDID,IW,RW,JJ,NHBW,X,ZST,DMIX) 
-                WRITE (LRCRVR) NATJ, JJ,TOUT
+                WRITE (LRCRVR) NATJ, JJ,TOUT,DMAX
                 WRITE (LRCRVR) (X(J), J=1,JJ)
                 WRITE (LRCRVR) (C(J), J=1,JJ)
                 write(LOUT,*) 'save file stored'            
